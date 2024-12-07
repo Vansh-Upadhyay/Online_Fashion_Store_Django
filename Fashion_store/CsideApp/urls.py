@@ -1,0 +1,40 @@
+from django.urls import path
+from CsideApp import views
+urlpatterns = [
+    path ('login/',views.login,name='login'),
+    path ('register/',views.register,name='register'),
+    path ('process_registration/',views.process_registration,name='process_registration'),
+    path ('process_login/',views.process_login,name='process_login'),
+    path ('process_verfication/',views.process_verfication,name='process_verfication'),
+    path ('process_rpassword/',views.process_rpassword,name='process_rpassword'),
+    path ('process_address/',views.process_address,name='process_address'),
+    path ('add_to_cart/',views.add_to_cart,name='add_to_cart'),
+    path ('send_otp/',views.send_otp,name='send_otp'),
+    path ('email/',views.email,name='email'),
+    path ('otp_email/',views.otp_email,name='otp_email'),
+    path('remove-address/<int:id>/', views.remove_address, name="remove-address"),
+    path('remove-cart/<int:id>/', views.remove_cart, name="remove-cart"), 
+    path("about/", views.about, name='about'),
+    path("services/", views.services, name='services'),
+    path("viewuser/", views.viewuser, name='viewuser'),
+    path('delete_user/<int:id>/', views.delete_user, name='delete_user'),
+    path("edit_user/<int:id>", views.edit_user, name='edit_user'),
+    path('delete_my_account/', views.delete_my_account, name='delete_my_account'),
+    path("cart/", views.cart, name='store'),
+    path("checkout/", views.checkout, name='checkout'),
+    path('categories/', views.all_categories, name="all-categories"),
+    path('category_products/<int:id>/', views.category_products, name="category-products"),
+    path("order/", views.order, name='order'),
+    path("add_address/", views.add_address, name='add_address'),
+    path("profile/", views.profile, name='profile'),
+    path("detail/<int:id>/", views.detail, name='detail'),
+    path('plus-cart/<int:cart_id>/', views.plus_cart, name="plus-cart"),
+    path('minus-cart/<int:cart_id>/', views.minus_cart, name="minus-cart"),
+    path("email_verfication/", views.email_verfication, name='email_verfication'),
+    path("reset_password/", views.reset_password, name='reset_password'),
+    path("update_user_info/", views.update_user_info, name='update_user_info'),
+    path("otp_verfiy/", views.otp_verfiy, name='otp_verfiy'),
+    path ('logout_view/',views.logout_view,name='logout_view')
+
+]
+

@@ -1,0 +1,316 @@
+{% include 'base.html' %}
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Jewelry Shop | Django Ecommerce</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <style>
+    /* Style input fields */
+.form-control {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.my-input {
+    transition: all 0.3s ease-in-out;
+}
+
+.my-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Button styles */
+.btn-save, .btn-cancel {
+    padding: 6px 15px;
+    font-size: 14px;
+    margin-right: 8px;
+    border-radius: 4px;
+}
+
+.btn-save {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+.btn-cancel {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+}
+
+    body {
+      font-family: Arial, sans-serif; /* Use a standard font for better readability */
+    }
+
+    .container {
+      max-width: 1200px; /* Limit maximum width for larger screens */
+      margin: 0 auto; /* Center the container */
+      padding: 0 15px; /* Add padding for small screens */
+    }
+
+    .jumbotron {
+      padding: 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-wrap: wrap; /* Allows wrapping for smaller screens */
+      justify-content: space-between; /* Spaces items evenly */
+      align-items: center; /* Centers items vertically */
+    }
+
+    .jumbotron-content {
+      flex: 1; /* Allow content to take available space */
+      min-width: 250px; /* Prevents content from getting too small */
+      margin-right: 1rem; /* Spacing between content and image */
+    }
+
+    .jumbotron-image {
+      max-width: 100%; /* Ensures the image container does not exceed the width */
+      height: auto; /* Maintain aspect ratio */
+      margin-top: 1rem; /* Add margin for spacing in smaller screens */
+    }
+
+    .jumbotron-image img {
+      max-width: 100%; /* Responsive image */
+      height: auto; /* Maintain aspect ratio */
+    }
+
+    .card {
+      border: 1px solid #ddd; /* Add border for visual separation */
+      border-radius: 5px; /* Rounded corners */
+      overflow: hidden; /* Prevent overflow for rounded corners */
+      transition: box-shadow 0.3s; /* Smooth transition for hover effect */
+    }
+
+    .card:hover {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Add shadow on hover */
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .jumbotron {
+        flex-direction: column; /* Stack vertically on smaller screens */
+        align-items: flex-start; /* Align items to the left */
+      }
+      .jumbotron-content {
+        margin-right: 0; /* Remove right margin on smaller screens */
+        margin-bottom: 1rem; /* Add bottom margin for spacing */
+      }
+    }
+
+    @media (max-width: 576px) {
+      .container {
+        padding: 0 10px; /* Reduced padding for smaller screens */
+      }
+
+      .jumbotron {
+        padding: 1rem; /* Reduced padding for smaller screens */
+      }
+
+      h1 {
+        font-size: 1.5rem; /* Smaller heading size */
+      }
+
+      .btn {
+        width: 100%; /* Full-width buttons */
+        margin-bottom: 0.5rem; /* Spacing between buttons */
+      }
+    }
+  </style>
+  <!-- Place this in your base template or specific page -->
+
+
+</head>
+<body>
+  <div class="container py-5">
+    <div class="jumbotron">
+      <div class="jumbotron-content">
+          <h1>{{user.fullname}}</h1>
+          <div id="user-details">
+              <p><strong>Email:</strong> <span id="email-display">{{user.email}}</span></p>
+              <p><strong>Username:</strong> <span id="username-display">{{user.fullname}}</span></p>
+          </div>
+          <p id="action-buttons">
+              <a class="btn btn-primary btn-large" href="/add_address">Add Address »</a>
+              <a class="btn btn-outline-primary btn-large" href="/order">My Orders »</a>
+              <a class="btn btn-info btn-large" id="edit-btn" href="#" onclick="enableEdit()">Edit</a>
+          </p>
+      </div>
+      <div class="jumbotron-image">
+        <img src="{{user.profilephoto.url}}" alt="User Image" class="img-fluid" style="width: 167px; height: 167px; object-fit: cover;"> <!-- Responsive image class -->
+    </div>
+    
+  </div>
+
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="card mb-4" id="headings">
+          <div class="card-header">Addresses <span class="float-right"><a href="/add_address">Add Address</a></span></div>
+          <div class="card-body">
+            {% if addresses %}
+              {% for address in addresses %}
+                <h4 class="mb-3">Address {{forloop.counter}}</h4>
+                <span class="float-right"><a href="{% url 'remove-address' address.id %}"><i class="fas fa-trash-alt small text-muted"></i></a></span>
+                <p>
+                  <strong>Locality: </strong>{{address.locality}} <br>
+                  <strong>City: </strong>{{address.city}} <br>
+                  <strong>State: </strong>{{address.state}} <br>
+                </p>
+                <hr>
+              {% endfor %}
+            {% else %}
+              <div class="text-danger">Address not Added.</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card mb-4" id="tables">
+          <div class="card-header">Orders</div>
+          <div class="card-body">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Item</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if orders %}
+                  {% for order in orders %}
+                    <tr>
+                      <td>{{forloop.counter}}</td>
+                      <td>{{order.product.itemName}}</td>
+                      <td>{{order.ordered_date}}</td>
+                    </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td class="text-danger" colspan="3">You've not Ordered anything yet.</td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/vendor/jquery/jquery.min.js"></script>
+  <script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/static/vendor/lightbox2/js/lightbox.min.js"></script>
+  <script src="/static/vendor/nouislider/nouislider.min.js"></script>
+  <script src="/static/vendor/bootstrap-select/js/bootstrap-select.min.js"></script>
+  <script src="/static/vendor/owl.carousel2/owl.carousel.min.js"></script>
+  <script src="/static/vendor/owl.carousel2.thumbs/owl.carousel2.thumbs.min.js"></script>
+  <script src="/static/js/front.js"></script>
+  
+  <script>
+    function enableEdit() {
+      // Get the current email and username values
+      var email = document.getElementById('email-display').textContent;
+      var username = document.getElementById('username-display').textContent;
+  
+      // Create input fields for email and username
+      var emailInput = `<input type="email" id="email-input" class="form-control my-input" value="${email}" />`;
+      var usernameInput = `<input type="text" id="username-input" class="form-control my-input" value="${username}" />`;
+      var userId = "{{ request.session.uid }}";
+      // Replace the email and username display with input fields and add Save/Cancel buttons
+      document.getElementById('user-details').innerHTML = `
+        <form id="update-form" action="/update_user_info/" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}  <!-- CSRF token for security -->
+            <p><strong>Email:</strong> <input type="email" name="email" class="form-control my-input" value="${email}" required /></p>
+            <p><strong>Username:</strong> <input type="text" name="username" class="form-control my-input" value="${username}" required /></p>
+            <input type="hidden" name="user_id" value="${userId}">
+            <div class="input-group mb-3">
+                <label class="input-group-text">Change Profile Image</label>
+                <input type="file" class="form-control" id="editing" name="item_image" accept=".jpg,.png,.svg,.webp">
+            </div>
+            <button type="submit" class="btn btn-success btn-save">Save</button>
+            <button type="button" class="btn btn-secondary btn-cancel" onclick="cancelEdit('${email}', '${username}')">Cancel</button><br><br>
+        </form>
+    `;
+  
+      // Hide the edit button
+      document.getElementById('edit-btn').style.display = 'none';
+  }
+  
+  function saveDetails() {
+      // Save the input values (you may want to send this to the backend)
+      var newEmail = document.getElementById('email-input').value;
+      var newUsername = document.getElementById('username-input').value;
+  
+      // Replace the input fields with the updated values
+      document.getElementById('user-details').innerHTML = `
+          <p><strong>Email:</strong> <span id="email-display">${newEmail}</span></p>
+          <p><strong>Username:</strong> <span id="username-display">${newUsername}</span></p>
+      `;
+  
+      // Show the edit button again
+      document.getElementById('edit-btn').style.display = 'inline';
+  }
+  
+  function cancelEdit(email, username) {
+      // Restore the original values for email and username
+      document.getElementById('user-details').innerHTML = `
+          <p><strong>Email:</strong> <span id="email-display">${email}</span></p>
+          <p><strong>Username:</strong> <span id="username-display">${username}</span></p>
+      `;
+  
+      // Show the edit button again
+      document.getElementById('edit-btn').style.display = 'inline';
+  }
+  
+  
+    var range = document.getElementById('range');
+    noUiSlider.create(range, {
+      range: {
+        'min': 0,
+        'max': 2000
+      },
+      step: 5,
+      start: [100, 1000],
+      margin: 300,
+      connect: true,
+      direction: 'ltr',
+      orientation: 'horizontal',
+      behaviour: 'tap-drag',
+      tooltips: true,
+      format: {
+        to: function (value) {
+          return '$' + value;
+        },
+        from: function (value) {
+          return value.replace('', '');
+        }
+      }
+    });
+  </script>
+
+  <script>
+    function injectSvgSprite(path) {
+      var ajax = new XMLHttpRequest();
+      ajax.open("GET", path, true);
+      ajax.send();
+      ajax.onload = function(e) {
+        var div = document.createElement("div");
+        div.className = 'd-none';
+        div.innerHTML = ajax.responseText;
+        document.body.insertBefore(div, document.body.childNodes[0]);
+      }
+    }
+    injectSvgSprite('https://bootstraptemple.com/files/icons/orion-svg-sprite.svg');
+  </script>
+</body>
+</html>
